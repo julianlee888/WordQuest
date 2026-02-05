@@ -1,0 +1,605 @@
+/* ============================================
+   Word Quest - Games Styles
+   ============================================ */
+
+/* Level Test */
+.test-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.test-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.test-header h2 {
+    font-size: 1.8rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.test-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+.test-progress-bar {
+    width: 200px;
+    height: 8px;
+    background: var(--color-bg-light);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.test-progress-fill {
+    height: 100%;
+    background: var(--gradient-primary);
+    transition: width 0.3s ease;
+}
+
+.test-question-area {
+    flex: 1;
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.test-question {
+    text-align: center;
+    width: 100%;
+}
+
+.test-word {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-xl);
+    color: var(--color-primary-light);
+}
+
+.test-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.test-option {
+    padding: var(--spacing-lg);
+    background: var(--color-bg-dark);
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.test-option:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+}
+
+.test-option.selected {
+    border-color: var(--color-primary);
+    background: rgba(124, 58, 237, 0.2);
+}
+
+.test-option.correct {
+    border-color: var(--color-success);
+    background: rgba(16, 185, 129, 0.2);
+}
+
+.test-option.wrong {
+    border-color: var(--color-danger);
+    background: rgba(239, 68, 68, 0.2);
+}
+
+.test-result {
+    text-align: center;
+    padding: var(--spacing-2xl);
+}
+
+.result-level {
+    font-size: 4rem;
+    margin-bottom: var(--spacing-lg);
+}
+
+.result-title {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-md);
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.result-desc {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-xl);
+}
+
+/* Learning View */
+.learning-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+}
+
+.learning-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-xl);
+}
+
+.learning-progress {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+}
+
+.learning-streak {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-weight: 700;
+    color: var(--color-accent);
+}
+
+.word-card {
+    flex: 1;
+    max-height: 400px;
+}
+
+.word-level-tag {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+}
+
+.current-word {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-lg);
+    letter-spacing: 2px;
+}
+
+.hint-text {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin-top: var(--spacing-lg);
+}
+
+.word-meaning {
+    margin-bottom: var(--spacing-lg);
+}
+
+.word-chinese {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+}
+
+.word-pos {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+}
+
+.word-example {
+    text-align: center;
+}
+
+.example-sentence {
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--color-secondary-light);
+    margin-bottom: var(--spacing-sm);
+}
+
+.example-translation {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+}
+
+.learning-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
+}
+
+.learning-actions .btn {
+    flex: 1;
+    padding: var(--spacing-lg);
+    font-size: 1.1rem;
+}
+
+.btn-know {
+    background: var(--color-success);
+    border-color: var(--color-success);
+}
+
+.btn-review {
+    background: var(--color-warning);
+    border-color: var(--color-warning);
+    color: var(--color-bg-dark);
+}
+
+/* Game Container */
+.game-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+    min-height: calc(100vh - 80px);
+}
+
+.game-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-xl);
+}
+
+.game-title {
+    font-size: 1.5rem;
+}
+
+.game-score {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-accent);
+}
+
+.game-area {
+    min-height: 400px;
+}
+
+/* Matching Game */
+.matching-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+}
+
+.match-card {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md);
+    background: var(--color-bg-card);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 1rem;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.match-card:hover {
+    border-color: var(--color-primary);
+}
+
+.match-card.selected {
+    border-color: var(--color-primary);
+    background: rgba(124, 58, 237, 0.3);
+}
+
+.match-card.matched {
+    background: rgba(16, 185, 129, 0.3);
+    border-color: var(--color-success);
+    pointer-events: none;
+}
+
+/* Spelling Game */
+.spelling-word {
+    font-size: 1.5rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+}
+
+.spelling-input-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.spelling-input {
+    width: 100%;
+    max-width: 400px;
+    padding: var(--spacing-lg);
+    font-size: 1.5rem;
+    text-align: center;
+    text-transform: lowercase;
+    letter-spacing: 4px;
+}
+
+.letter-hints {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.letter-hint {
+    width: 40px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-dark);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.letter-hint.filled {
+    border-color: var(--color-primary);
+    color: var(--color-primary-light);
+}
+
+/* Listening Game */
+.listening-area {
+    text-align: center;
+}
+
+.play-sound-btn {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    font-size: 3rem;
+    margin-bottom: var(--spacing-xl);
+    background: var(--gradient-primary);
+    border: none;
+}
+
+.listening-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.listening-option {
+    padding: var(--spacing-lg);
+    background: var(--color-bg-dark);
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+}
+
+.listening-option:hover {
+    border-color: var(--color-primary);
+}
+
+/* Fill Blank Game */
+.fill-sentence {
+    font-size: 1.3rem;
+    line-height: 2;
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.blank-slot {
+    display: inline-block;
+    min-width: 100px;
+    border-bottom: 3px solid var(--color-primary);
+    margin: 0 var(--spacing-sm);
+    padding: 0 var(--spacing-sm);
+    color: var(--color-primary-light);
+}
+
+.fill-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+.fill-option {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--color-bg-dark);
+    border: 2px solid transparent;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.fill-option:hover {
+    border-color: var(--color-primary);
+}
+
+.fill-option.selected {
+    background: var(--color-primary);
+}
+
+/* Game Result */
+.game-result {
+    text-align: center;
+    padding: var(--spacing-2xl);
+}
+
+.result-stars {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-lg);
+}
+
+.result-score {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-bottom: var(--spacing-md);
+}
+
+.result-stats {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-xl);
+    margin: var(--spacing-xl) 0;
+}
+
+.result-stat {
+    text-align: center;
+}
+
+.result-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.result-stat-label {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+}
+
+.result-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+/* Review View */
+.review-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-xl);
+}
+
+.review-word {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.review-meaning {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.review-example {
+    color: var(--color-text-secondary);
+    font-style: italic;
+}
+
+.review-actions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-xl);
+}
+
+.review-actions .btn {
+    flex-direction: column;
+    padding: var(--spacing-md);
+    font-size: 0.9rem;
+}
+
+/* Achievements View */
+.achievements-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+}
+
+.achievements-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.achievement-card {
+    padding: var(--spacing-lg);
+    background: var(--color-bg-card);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.achievement-card.unlocked {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+}
+
+.achievement-card.locked {
+    opacity: 0.5;
+    filter: grayscale(1);
+}
+
+.achievement-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.achievement-name {
+    font-weight: 700;
+    margin-bottom: var(--spacing-xs);
+}
+
+.achievement-desc {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .matching-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .test-options {
+        grid-template-columns: 1fr;
+    }
+
+    .review-actions {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .matching-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .current-word {
+        font-size: 2rem;
+    }
+}
