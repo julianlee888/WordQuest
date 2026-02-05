@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Quest - 老師管理介面</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/teacher.css">
+</head>
+
+<body class="teacher-body">
+    <!-- Login Screen -->
+    <div id="teacher-login" class="teacher-login">
+        <div class="login-card glass-card">
+            <h1>👨‍🏫 Word Quest</h1>
+            <h2>老師管理介面</h2>
+            <button id="teacher-google-login" class="btn btn-google">
+                <svg class="google-icon" viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="#4285F4"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                    <path fill="#EA4335"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                </svg>
+                使用 Google 帳號登入
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="teacher-dashboard" class="teacher-dashboard hidden">
+        <!-- Header -->
+        <header class="teacher-header">
+            <div class="header-left">
+                <h1>📚 Word Quest 管理後台</h1>
+            </div>
+            <div class="header-right">
+                <span id="teacher-name">老師</span>
+                <button id="teacher-logout" class="btn btn-secondary">登出</button>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="teacher-nav">
+            <button class="nav-btn active" data-tab="students">👥 學生管理</button>
+            <button class="nav-btn" data-tab="words">📖 單字管理</button>
+            <button class="nav-btn" data-tab="reports">📊 學習報表</button>
+            <button class="nav-btn" data-tab="settings">⚙️ 設定</button>
+        </nav>
+
+        <!-- Content Area -->
+        <main class="teacher-main">
+            <!-- Students Tab -->
+            <section id="tab-students" class="tab-content">
+                <div class="section-header">
+                    <h2>學生列表</h2>
+                    <div class="section-actions">
+                        <input type="text" id="student-search" placeholder="搜尋學生..." class="search-input">
+                        <button id="export-students" class="btn btn-secondary">📥 匯出報表</button>
+                    </div>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <span class="stat-number" id="total-students">0</span>
+                        <span class="stat-label">總學生數</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="active-today">0</span>
+                        <span class="stat-label">今日活躍</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="avg-progress">0%</span>
+                        <span class="stat-label">平均進度</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="total-words-learned">0</span>
+                        <span class="stat-label">總學習單字</span>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="students-table">
+                        <thead>
+                            <tr>
+                                <th>排名</th>
+                                <th>學生</th>
+                                <th>等級</th>
+                                <th>已學單字</th>
+                                <th>連續天數</th>
+                                <th>總積分</th>
+                                <th>最後活躍</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-tbody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Words Tab -->
+            <section id="tab-words" class="tab-content hidden">
+                <div class="section-header">
+                    <h2>單字庫管理</h2>
+                    <div class="section-actions">
+                        <select id="level-filter" class="select-input">
+                            <option value="all">全部等級</option>
+                            <option value="preA1">Pre A1</option>
+                            <option value="A1">A1</option>
+                            <option value="A2">A2</option>
+                            <option value="KET">KET</option>
+                            <option value="PET">PET</option>
+                            <option value="FCE">FCE</option>
+                        </select>
+                        <button id="add-word-btn" class="btn btn-primary">➕ 新增單字</button>
+                        <button id="import-words-btn" class="btn btn-secondary">📤 批次匯入</button>
+                    </div>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <span class="stat-number" id="words-preA1">0</span>
+                        <span class="stat-label">Pre A1</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="words-A1">0</span>
+                        <span class="stat-label">A1</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="words-A2">0</span>
+                        <span class="stat-label">A2</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="words-KET">0</span>
+                        <span class="stat-label">KET</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="words-PET">0</span>
+                        <span class="stat-label">PET</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="words-FCE">0</span>
+                        <span class="stat-label">FCE</span>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="words-table">
+                        <thead>
+                            <tr>
+                                <th>單字</th>
+                                <th>中文</th>
+                                <th>詞性</th>
+                                <th>等級</th>
+                                <th>例句</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="words-tbody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Reports Tab -->
+            <section id="tab-reports" class="tab-content hidden">
+                <div class="section-header">
+                    <h2>學習報表</h2>
+                    <div class="section-actions">
+                        <select id="report-period" class="select-input">
+                            <option value="week">本週</option>
+                            <option value="month">本月</option>
+                            <option value="all">全部</option>
+                        </select>
+                        <button id="download-report" class="btn btn-primary">📊 下載報表</button>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="chart-card glass-card">
+                        <h3>每日學習人數</h3>
+                        <div id="daily-users-chart" class="chart-area">
+                            <div class="chart-placeholder">📈 圖表載入中...</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-card glass-card">
+                        <h3>等級分佈</h3>
+                        <div id="level-distribution-chart" class="chart-area">
+                            <div class="chart-placeholder">📊 圖表載入中...</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-card glass-card">
+                        <h3>學習單字趨勢</h3>
+                        <div id="words-trend-chart" class="chart-area">
+                            <div class="chart-placeholder">📉 圖表載入中...</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-card glass-card">
+                        <h3>成就解鎖統計</h3>
+                        <div id="achievements-chart" class="chart-area">
+                            <div class="chart-placeholder">🏆 圖表載入中...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Tab -->
+            <section id="tab-settings" class="tab-content hidden">
+                <div class="section-header">
+                    <h2>系統設定</h2>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="settings-card glass-card">
+                        <h3>⚠️ Firebase 設定</h3>
+                        <p>請在 <code>js/firebase-config.js</code> 中設定您的 Firebase 專案資訊。</p>
+                        <div class="config-status" id="firebase-status">
+                            <span class="status-icon">❌</span>
+                            <span>Firebase 尚未設定</span>
+                        </div>
+                        <a href="https://console.firebase.google.com/" target="_blank" class="btn btn-secondary">
+                            前往 Firebase Console
+                        </a>
+                    </div>
+
+                    <div class="settings-card glass-card">
+                        <h3>📚 單字庫擴充</h3>
+                        <p>目前單字庫有 <strong id="current-word-count">0</strong> 個單字。</p>
+                        <p>您可以透過批次匯入功能新增更多單字。</p>
+                        <button id="download-template" class="btn btn-secondary">
+                            📥 下載 CSV 範本
+                        </button>
+                    </div>
+
+                    <div class="settings-card glass-card">
+                        <h3>🔗 學生入口</h3>
+                        <p>分享以下連結給學生：</p>
+                        <div class="copy-link">
+                            <input type="text" id="student-link" readonly>
+                            <button id="copy-link-btn" class="btn btn-primary">複製</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-card glass-card">
+                        <h3>📖 使用說明</h3>
+                        <ul class="help-list">
+                            <li>學生使用 Google 帳號登入後，會自動進行等級測試</li>
+                            <li>每日學習上限預設為 10 個單字，學生可自行調整（10-20）</li>
+                            <li>系統會自動追蹤學習進度和連續天數</li>
+                            <li>老師可在此介面查看所有學生的學習狀況</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add Word Modal -->
+    <div id="add-word-modal" class="modal hidden">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2>新增單字</h2>
+                <button class="modal-close" onclick="closeModal('add-word-modal')">×</button>
+            </div>
+            <form id="add-word-form">
+                <div class="form-group">
+                    <label>英文單字 *</label>
+                    <input type="text" name="word" required>
+                </div>
+                <div class="form-group">
+                    <label>中文意思 *</label>
+                    <input type="text" name="chinese" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>詞性 *</label>
+                        <select name="pos" required>
+                            <option value="n. 名詞">n. 名詞</option>
+                            <option value="v. 動詞">v. 動詞</option>
+                            <option value="adj. 形容詞">adj. 形容詞</option>
+                            <option value="adv. 副詞">adv. 副詞</option>
+                            <option value="prep. 介詞">prep. 介詞</option>
+                            <option value="conj. 連接詞">conj. 連接詞</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>等級 *</label>
+                        <select name="level" required>
+                            <option value="preA1">Pre A1</option>
+                            <option value="A1">A1</option>
+                            <option value="A2">A2</option>
+                            <option value="KET">KET</option>
+                            <option value="PET">PET</option>
+                            <option value="FCE">FCE</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>例句（英文）</label>
+                    <input type="text" name="example">
+                </div>
+                <div class="form-group">
+                    <label>例句（中文）</label>
+                    <input type="text" name="exampleCn">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('add-word-modal')">取消</button>
+                    <button type="submit" class="btn btn-primary">儲存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Import Words Modal -->
+    <div id="import-words-modal" class="modal hidden">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2>批次匯入單字</h2>
+                <button class="modal-close" onclick="closeModal('import-words-modal')">×</button>
+            </div>
+            <div class="import-instructions">
+                <p>請上傳 CSV 檔案，格式如下：</p>
+                <code>word,chinese,pos,level,example,exampleCn</code>
+                <p class="example">apple,蘋果,n. 名詞,preA1,I eat an apple.,我吃一顆蘋果。</p>
+            </div>
+            <div class="upload-area">
+                <input type="file" id="csv-file" accept=".csv" hidden>
+                <button class="btn btn-primary" onclick="document.getElementById('csv-file').click()">
+                    📁 選擇 CSV 檔案
+                </button>
+                <span id="selected-file"></span>
+            </div>
+            <div id="import-preview" class="import-preview hidden">
+                <h4>預覽（前 5 筆）</h4>
+                <div id="preview-content"></div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('import-words-modal')">取消</button>
+                <button type="button" id="confirm-import" class="btn btn-primary" disabled>確認匯入</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Detail Modal -->
+    <div id="student-detail-modal" class="modal hidden">
+        <div class="modal-content glass-card modal-large">
+            <div class="modal-header">
+                <h2>學生詳情</h2>
+                <button class="modal-close" onclick="closeModal('student-detail-modal')">×</button>
+            </div>
+            <div id="student-detail-content">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="data/word-bank.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/teacher.js"></script>
+</body>
+
+</html>

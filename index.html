@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Word Quest - 劍橋英檢分級的遊戲化英文單字學習工具，適合中小學生">
+    <meta name="keywords" content="英文學習, 單字, 劍橋英檢, 遊戲化學習, 中小學英文">
+    <title>Word Quest - 英文單字冒險</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+TC:wght@400;500;700;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/rpg-theme.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/games.css">
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="screen loading-screen">
+        <div class="loading-content">
+            <div class="game-logo">
+                <span class="logo-icon">⚔️</span>
+                <h1>Word Quest</h1>
+                <span class="logo-icon">🛡️</span>
+            </div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p class="loading-text">正在載入冒險世界...</p>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen hidden">
+        <div class="login-container">
+            <div class="login-card glass-card">
+                <div class="game-logo-large">
+                    <div class="logo-sword">⚔️</div>
+                    <h1 class="game-title">Word Quest</h1>
+                    <p class="game-subtitle">英文單字冒險之旅</p>
+                </div>
+
+                <div class="level-badges">
+                    <span class="badge badge-starter">Pre A1</span>
+                    <span class="badge badge-mover">A1</span>
+                    <span class="badge badge-flyer">A2</span>
+                    <span class="badge badge-ket">KET</span>
+                    <span class="badge badge-pet">PET</span>
+                    <span class="badge badge-fce">FCE</span>
+                </div>
+
+                <button id="google-login-btn" class="btn btn-google">
+                    <svg class="google-icon" viewBox="0 0 24 24">
+                        <path fill="#4285F4"
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="#34A853"
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05"
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                        <path fill="#EA4335"
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                    </svg>
+                    使用 Google 帳號登入
+                </button>
+
+                <p class="login-hint">🎮 開始你的英文冒險之旅！</p>
+            </div>
+        </div>
+        <div class="floating-particles"></div>
+    </div>
+
+    <!-- Level Test Screen -->
+    <div id="level-test-screen" class="screen hidden">
+        <div class="test-container">
+            <div class="test-header">
+                <h2>🎯 等級測試</h2>
+                <p>回答以下問題，讓我們找到最適合你的起始等級！</p>
+                <div class="test-progress">
+                    <div class="test-progress-bar">
+                        <div id="test-progress-fill" class="test-progress-fill"></div>
+                    </div>
+                    <span id="test-progress-text">0 / 10</span>
+                </div>
+            </div>
+
+            <div id="test-question-area" class="test-question-area glass-card">
+                <!-- Questions will be rendered here -->
+            </div>
+
+            <div id="test-result" class="test-result hidden">
+                <!-- Results will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Game Screen -->
+    <div id="game-screen" class="screen hidden">
+        <!-- Top Navigation Bar -->
+        <nav class="game-nav">
+            <div class="nav-left">
+                <div class="player-info">
+                    <div class="avatar-container">
+                        <img id="player-avatar" src="" alt="Avatar" class="player-avatar">
+                        <span id="player-level-badge" class="level-badge">Lv.1</span>
+                    </div>
+                    <div class="player-details">
+                        <span id="player-name" class="player-name">冒險者</span>
+                        <div class="exp-bar">
+                            <div id="exp-fill" class="exp-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-center">
+                <div class="game-logo-small">
+                    <span>⚔️</span>
+                    <span class="logo-text">Word Quest</span>
+                    <span>🛡️</span>
+                </div>
+            </div>
+
+            <div class="nav-right">
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <span class="stat-icon">🔥</span>
+                        <span id="streak-count" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">⭐</span>
+                        <span id="total-points" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon">📚</span>
+                        <span id="words-learned" class="stat-value">0</span>
+                    </div>
+                </div>
+                <button id="menu-btn" class="btn btn-icon">☰</button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="game-main">
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view">
+                <div class="dashboard-grid">
+                    <!-- Daily Quest Card -->
+                    <div class="dashboard-card quest-card glass-card">
+                        <div class="card-header">
+                            <h3>⚔️ 今日任務</h3>
+                            <span id="daily-date" class="date-badge"></span>
+                        </div>
+                        <div class="quest-progress">
+                            <div class="quest-ring">
+                                <svg class="progress-ring" viewBox="0 0 100 100">
+                                    <circle class="progress-ring-bg" cx="50" cy="50" r="45" />
+                                    <circle id="daily-progress-ring" class="progress-ring-fill" cx="50" cy="50"
+                                        r="45" />
+                                </svg>
+                                <div class="quest-count">
+                                    <span id="daily-learned">0</span>
+                                    <span class="quest-divider">/</span>
+                                    <span id="daily-target">10</span>
+                                </div>
+                            </div>
+                            <div class="quest-details">
+                                <p>今日新單字進度</p>
+                                <div class="quest-actions">
+                                    <button id="start-learning-btn" class="btn btn-primary btn-glow">
+                                        <span class="btn-icon">📖</span>
+                                        開始學習
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="word-limit-setting">
+                            <label>每日學習上限：</label>
+                            <div class="limit-selector">
+                                <button class="limit-btn" data-limit="10">10</button>
+                                <button class="limit-btn active" data-limit="15">15</button>
+                                <button class="limit-btn" data-limit="20">20</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review Card -->
+                    <div class="dashboard-card review-card glass-card">
+                        <div class="card-header">
+                            <h3>📖 複習副本</h3>
+                            <span class="review-badge">強化記憶</span>
+                        </div>
+                        <div class="review-stats">
+                            <div class="review-stat">
+                                <span class="stat-number" id="words-to-review">0</span>
+                                <span class="stat-label">待複習</span>
+                            </div>
+                            <div class="review-stat">
+                                <span class="stat-number" id="mastered-words">0</span>
+                                <span class="stat-label">已精通</span>
+                            </div>
+                        </div>
+                        <button id="start-review-btn" class="btn btn-secondary">
+                            <span class="btn-icon">🔄</span>
+                            進入複習
+                        </button>
+                    </div>
+
+                    <!-- Mini Games Card -->
+                    <div class="dashboard-card games-card glass-card">
+                        <div class="card-header">
+                            <h3>🎮 挑戰遊戲</h3>
+                        </div>
+                        <div class="games-grid">
+                            <button class="game-btn" data-game="matching">
+                                <span class="game-icon">🎯</span>
+                                <span class="game-name">配對挑戰</span>
+                            </button>
+                            <button class="game-btn" data-game="spelling">
+                                <span class="game-icon">✍️</span>
+                                <span class="game-name">拼字大師</span>
+                            </button>
+                            <button class="game-btn" data-game="listening">
+                                <span class="game-icon">👂</span>
+                                <span class="game-name">聽力訓練</span>
+                            </button>
+                            <button class="game-btn" data-game="fillblank">
+                                <span class="game-icon">📝</span>
+                                <span class="game-name">填空達人</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Achievements Card -->
+                    <div class="dashboard-card achievements-card glass-card">
+                        <div class="card-header">
+                            <h3>🏆 成就殿堂</h3>
+                            <a href="#" id="view-all-achievements" class="view-all">查看全部</a>
+                        </div>
+                        <div id="recent-achievements" class="achievements-preview">
+                            <!-- Recent achievements will be shown here -->
+                            <div class="achievement-placeholder">
+                                <span>🎖️</span>
+                                <p>完成任務解鎖成就！</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Leaderboard Card -->
+                    <div class="dashboard-card leaderboard-card glass-card">
+                        <div class="card-header">
+                            <h3>🏅 排行榜</h3>
+                            <div class="leaderboard-tabs">
+                                <button class="tab-btn active" data-tab="weekly">本週</button>
+                                <button class="tab-btn" data-tab="alltime">總榜</button>
+                            </div>
+                        </div>
+                        <div id="leaderboard-list" class="leaderboard-list">
+                            <!-- Leaderboard entries will be shown here -->
+                        </div>
+                    </div>
+
+                    <!-- Progress Chart Card -->
+                    <div class="dashboard-card progress-card glass-card">
+                        <div class="card-header">
+                            <h3>📊 學習進度</h3>
+                        </div>
+                        <div class="progress-chart">
+                            <div id="weekly-chart" class="weekly-chart">
+                                <!-- Chart will be rendered here -->
+                            </div>
+                        </div>
+                        <div class="cambridge-progress">
+                            <h4>劍橋等級進度</h4>
+                            <div id="cambridge-levels" class="cambridge-levels">
+                                <!-- Level progress bars will be shown here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning View -->
+            <div id="learning-view" class="view hidden">
+                <div class="learning-container">
+                    <div class="learning-header">
+                        <button id="back-to-dashboard" class="btn btn-back">← 返回</button>
+                        <div class="learning-progress">
+                            <span id="learning-current">1</span> / <span id="learning-total">10</span>
+                        </div>
+                        <div class="learning-streak">
+                            <span class="streak-icon">🔥</span>
+                            <span id="session-streak">0</span>
+                        </div>
+                    </div>
+
+                    <div id="word-card" class="word-card glass-card">
+                        <div class="word-card-inner">
+                            <div class="word-card-front">
+                                <div class="word-level-tag" id="word-level-tag">A1</div>
+                                <h2 id="current-word" class="current-word">apple</h2>
+                                <button id="play-pronunciation" class="btn btn-pronunciation">
+                                    🔊 播放發音
+                                </button>
+                                <p class="hint-text">點擊卡片查看意思</p>
+                            </div>
+                            <div class="word-card-back">
+                                <div class="word-meaning">
+                                    <p id="word-chinese" class="word-chinese">蘋果</p>
+                                    <p id="word-pos" class="word-pos">n. 名詞</p>
+                                </div>
+                                <div class="word-example">
+                                    <p id="word-example" class="example-sentence">"I eat an apple every day."</p>
+                                    <p id="word-example-cn" class="example-translation">我每天吃一顆蘋果。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="learning-actions">
+                        <button id="know-btn" class="btn btn-know">
+                            <span>😊</span> 我會了
+                        </button>
+                        <button id="review-btn" class="btn btn-review">
+                            <span>🤔</span> 需要複習
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game View -->
+            <div id="game-view" class="view hidden">
+                <div class="game-container">
+                    <div class="game-header">
+                        <button id="exit-game" class="btn btn-back">← 離開</button>
+                        <h2 id="game-title" class="game-title">遊戲</h2>
+                        <div class="game-score">
+                            <span class="score-icon">⭐</span>
+                            <span id="game-score">0</span>
+                        </div>
+                    </div>
+
+                    <div id="game-area" class="game-area">
+                        <!-- Game content will be rendered here -->
+                    </div>
+
+                    <div id="game-result" class="game-result hidden">
+                        <!-- Game results will be shown here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review View -->
+            <div id="review-view" class="view hidden">
+                <div class="review-container">
+                    <div class="review-header">
+                        <button id="exit-review" class="btn btn-back">← 返回</button>
+                        <h2>📖 複習副本</h2>
+                        <div class="review-progress">
+                            <span id="review-current">1</span> / <span id="review-total">10</span>
+                        </div>
+                    </div>
+
+                    <div id="flashcard" class="flashcard glass-card">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front">
+                                <h2 id="review-word" class="review-word">word</h2>
+                                <button class="btn btn-pronunciation" id="review-play-sound">🔊</button>
+                            </div>
+                            <div class="flashcard-back">
+                                <p id="review-meaning" class="review-meaning">意思</p>
+                                <p id="review-example" class="review-example">例句</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="review-actions">
+                        <button id="review-again" class="btn btn-danger">😰 再看一次</button>
+                        <button id="review-hard" class="btn btn-warning">🤔 有點難</button>
+                        <button id="review-good" class="btn btn-success">😊 記住了</button>
+                        <button id="review-easy" class="btn btn-primary">🎉 太簡單</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements View -->
+            <div id="achievements-view" class="view hidden">
+                <div class="achievements-container">
+                    <div class="achievements-header">
+                        <button id="exit-achievements" class="btn btn-back">← 返回</button>
+                        <h2>🏆 成就殿堂</h2>
+                    </div>
+                    <div id="achievements-grid" class="achievements-grid">
+                        <!-- Achievements will be rendered here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Share Modal -->
+            <div id="share-modal" class="modal hidden">
+                <div class="modal-content glass-card">
+                    <button id="close-share-modal" class="modal-close">×</button>
+                    <h2>📤 分享成果</h2>
+                    <div id="share-preview" class="share-preview">
+                        <!-- Share image preview -->
+                    </div>
+                    <div class="share-actions">
+                        <button id="download-share" class="btn btn-primary">📥 下載圖片</button>
+                        <button id="copy-share" class="btn btn-secondary">📋 複製連結</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Side Menu -->
+        <div id="side-menu" class="side-menu hidden">
+            <div class="menu-header">
+                <h3>選單</h3>
+                <button id="close-menu" class="btn btn-icon">×</button>
+            </div>
+            <nav class="menu-nav">
+                <a href="#" id="menu-dashboard" class="menu-item active">
+                    <span>🏠</span> 主頁
+                </a>
+                <a href="#" id="menu-profile" class="menu-item">
+                    <span>👤</span> 個人資料
+                </a>
+                <a href="#" id="menu-achievements" class="menu-item">
+                    <span>🏆</span> 成就
+                </a>
+                <a href="#" id="menu-settings" class="menu-item">
+                    <span>⚙️</span> 設定
+                </a>
+                <a href="#" id="menu-share" class="menu-item">
+                    <span>📤</span> 分享成果
+                </a>
+                <hr class="menu-divider">
+                <a href="teacher.html" id="menu-teacher" class="menu-item">
+                    <span>👨‍🏫</span> 老師入口
+                </a>
+                <a href="#" id="menu-logout" class="menu-item menu-logout">
+                    <span>🚪</span> 登出
+                </a>
+            </nav>
+        </div>
+        <div id="menu-overlay" class="menu-overlay hidden"></div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Achievement Popup -->
+    <div id="achievement-popup" class="achievement-popup hidden">
+        <div class="achievement-content">
+            <div class="achievement-icon">🏆</div>
+            <h3>成就解鎖！</h3>
+            <p id="achievement-name"></p>
+            <p id="achievement-desc"></p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="data/word-bank.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/words.js"></script>
+    <script src="js/games.js"></script>
+    <script src="js/achievements.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
