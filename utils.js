@@ -141,7 +141,7 @@ const Utils = {
     speak(text, lang = 'en-US') {
         return new Promise((resolve, reject) => {
             if (!('speechSynthesis' in window)) {
-                reject(new Error('瀏覽器不支援語音合成']);
+                reject(new Error('瀏覽器不支援語音合成'));
                 return;
             }
 
