@@ -5,12 +5,13 @@
 
 // Firebase 設定 - 請替換為您的專案設定
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDnMKU845gFeZzIsyu4qNGh2FWo5z-tCls",
+    authDomain: "wordquest-79321.firebaseapp.com",
+    projectId: "wordquest-79321",
+    storageBucket: "wordquest-79321.firebasestorage.app",
+    messagingSenderId: "220901039915",
+    appId: "1:220901039915:web:c9d697303c42abed546f6e",
+    measurementId: "G-WNVGMZF7ED"
 };
 
 // 檢查是否已設定 Firebase
@@ -50,3 +51,4 @@ window.FirebaseConfig = {
     auth: auth,
     db: db
 };
+
